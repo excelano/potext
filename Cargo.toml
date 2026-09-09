@@ -31,4 +31,4 @@ objc2-foundation = { version = "0.3", default-features = false, features = ["std
 # call this crate cannot make. This is a safe API over the same hive, pure Rust
 # and no build script.
 [target.'cfg(target_os = "windows")'.dependencies]
-windows-registry = "0.6.1"
+windows-registry = "0.100.0"
