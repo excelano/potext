@@ -1,0 +1,40 @@
+name: ci
+
+# The checks live in excelano/.github. This crate is linked by other code, so
+# it calls the library policy: the binary checks plus the docs and packaging a
+# published crate owes its consumers.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    uses: excelano/.github/.github/workflows/rust-lib-ci.yml@main
+
+  # The floor in Cargo.toml, checked rather than asserted.
+  #
+  # It is `OnceLock`'s and not the edition's: `catalog!` expands to a `static
+  # OnceLock<Catalog>` in the caller's crate, and that stabilised in 1.70. So
+  # unlike encsniff — whose floor is edition 2021's and therefore cannot drift
+  # without an edition bump saying so — this number can be wrong quietly, which
+  # is the reason for the job.
+  #
+  # Simpler than encsniff's, and the difference is a fact about this crate
+  # rather than a preference: there are no `[dev-dependencies]` to strip,
+  # because the tests use nothing but the crate itself. What a consumer gets is
+  # what is here.
+  msrv:
+    name: Builds on the declared minimum
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install the declared minimum
+        run: |
+          msrv=$(sed -n 's/^rust-version *= *"\([^"]*\)".*/\1/p' Cargo.toml)
+          echo "Cargo.toml declares ${msrv}"
+          rustup toolchain install "${msrv}" --profile minimal --no-self-update
+          echo "MSRV=${msrv}" >> "$GITHUB_ENV"
+      - name: The library builds on it
+        run: cargo +${MSRV} check --lib

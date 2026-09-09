@@ -1,0 +1,31 @@
+# Dependabot keeps the two platform dependencies and the actions CI runs
+# current, so a security fix arrives as a PR rather than slipping past.
+#
+# A `cargo` block, unlike encsniff's, because this crate does have
+# dependencies: `objc2-foundation` on macOS and `windows-registry` on Windows.
+# Neither is built on Linux, and Dependabot resolves the manifest rather than a
+# target, so both are still watched from here.
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+    groups:
+      cargo:
+        patterns:
+          - "*"
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
