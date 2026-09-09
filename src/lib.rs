@@ -271,7 +271,9 @@ macro_rules! catalog {
         #[allow(dead_code)]
         #[must_use]
         pub fn t(msgid: &'static str) -> &'static str {
-            POTEXT_CATALOG.get().map_or(msgid, |catalog| catalog.t(msgid))
+            POTEXT_CATALOG
+                .get()
+                .map_or(msgid, |catalog| catalog.t(msgid))
         }
 
         /// This message, where the English is ambiguous and a context says which sense.
@@ -606,7 +608,8 @@ fn two_form_rule(header: &str) -> bool {
         .filter_map(|line| line.trim().strip_prefix("Plural-Forms:"))
         .any(|rule| {
             let tight: String = rule.chars().filter(|c| !c.is_whitespace()).collect();
-            tight.starts_with("nplurals=2;plural=(n!=1)") || tight.starts_with("nplurals=2;plural=n!=1")
+            tight.starts_with("nplurals=2;plural=(n!=1)")
+                || tight.starts_with("nplurals=2;plural=n!=1")
         })
 }
 
@@ -680,7 +683,11 @@ mod tests {
         let catalog = catalog(
             "#, fuzzy\nmsgid \"Save\"\nmsgstr \"Sichern\"\n\nmsgid \"Undo\"\nmsgstr \"Rückgängig\"\n",
         );
-        assert_eq!(single(&catalog, "Save"), None, "the guess must not be loaded");
+        assert_eq!(
+            single(&catalog, "Save"),
+            None,
+            "the guess must not be loaded"
+        );
         assert_eq!(single(&catalog, "Undo"), Some("Rückgängig"));
     }
 
@@ -731,7 +738,10 @@ mod tests {
              msgstr[0] \"{n} Byte\"\n\
              msgstr[1] \"{n} Bytes\"\n",
         );
-        assert!(catalog.two_forms, "the rule is the header's, not the mark's");
+        assert!(
+            catalog.two_forms,
+            "the rule is the header's, not the mark's"
+        );
         assert!(matches!(
             catalog.plain.get("{n} byte"),
             Some(Message::Plural(_))
@@ -814,7 +824,9 @@ mod tests {
     /// for every count above one.
     #[test]
     fn only_the_two_form_rule_is_accepted() {
-        assert!(two_form_rule("Plural-Forms: nplurals=2; plural=(n != 1);\n"));
+        assert!(two_form_rule(
+            "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+        ));
         assert!(two_form_rule("Plural-Forms: nplurals=2; plural=n != 1;\n"));
         assert!(
             !two_form_rule("Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11) ? 0 : 1;\n"),
@@ -886,7 +898,10 @@ mod tests {
     /// for and the reason `choose` tries the full tag first.
     #[test]
     fn an_exact_region_wins_over_its_language() {
-        let available = [("en", "msgid \"Colour\"\nmsgstr \"Color\"\n"), ("en-GB", "")];
+        let available = [
+            ("en", "msgid \"Colour\"\nmsgstr \"Color\"\n"),
+            ("en-GB", ""),
+        ];
         assert_eq!(
             choose(&available, "en_GB.UTF-8").map(|(tag, _)| tag),
             Some("en-GB")
