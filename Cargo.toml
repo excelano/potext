@@ -1,0 +1,34 @@
+[package]
+name = "potext"
+description = "Read GNU .po message catalogues compiled into the binary, and the language the platform asks for"
+version = "0.1.0"
+edition = "2021"
+authors = ["David M. Anderson"]
+license = "MIT"
+repository = "https://github.com/excelano/potext"
+readme = "README.md"
+keywords = ["i18n", "gettext", "po", "translation", "localization"]
+categories = ["internationalization", "localization"]
+# Nothing here needs past what edition 2021 asks for. A consumer's floor is its
+# own; this one is deliberately low so that the applications set it instead.
+rust-version = "1.70"
+
+[dependencies]
+
+# What the desktop says the person reads, on the two platforms that do not put
+# it in the environment.
+#
+# macOS is the one where nothing else would work: `LANG` is set by Terminal and
+# by nothing else, so a bundle opened from Finder or the Dock has an empty
+# environment. `preferredLanguages` is the ordered list from System Settings.
+# Both crates carry their unsafe on this crate's behalf, as `rfd` and `opener`
+# do for the applications, and every call made into them here is a safe
+# function — this crate's own source is `forbid(unsafe_code)`.
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2-foundation = { version = "0.3", default-features = false, features = ["std", "NSString", "NSArray", "NSLocale"] }
+
+# Windows keeps it in the registry, and `GetUserDefaultLocaleName` is a raw FFI
+# call this crate cannot make. This is a safe API over the same hive, pure Rust
+# and no build script.
+[target.'cfg(target_os = "windows")'.dependencies]
+windows-registry = "0.6.1"
