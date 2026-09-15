@@ -368,7 +368,7 @@ fn platform() -> Option<String> {
 ///
 /// **Written on Linux and never run.** `cargo check --target
 /// aarch64-apple-darwin` says it compiles and says nothing about what it
-/// returns. `CHECKLIST.md` carries the item for the session that has a Mac.
+/// returns. The session with a Mac is what answers that.
 #[cfg(target_os = "macos")]
 fn platform() -> Option<String> {
     let languages = objc2_foundation::NSLocale::preferredLanguages();
@@ -384,8 +384,7 @@ fn platform() -> Option<String> {
 /// is already in this tree for `opens_with`, rather than through an FFI call
 /// this crate cannot make under `deny(unsafe_code)`.
 ///
-/// **Written on Linux and never run**, the same caveat as the macOS arm above,
-/// and with the same `CHECKLIST.md` item.
+/// **Written on Linux and never run**, the same caveat as the macOS arm above.
 #[cfg(target_os = "windows")]
 fn platform() -> Option<String> {
     let read = windows_registry::CURRENT_USER
