@@ -31,4 +31,12 @@ objc2-foundation = { version = "0.3", default-features = false, features = ["std
 # call this crate cannot make. This is a safe API over the same hive, pure Rust
 # and no build script.
 [target.'cfg(target_os = "windows")'.dependencies]
+# Held at the 0.6 line, and the reason is a consumer's tree rather than this
+# crate's. `slipcase-desktop` holds it there because the windows-rs support
+# crates `eframe` pulls — `windows-link`, `windows-result`, `windows-strings` —
+# are of that generation, and 0.100.0 is windows-rs re-basing onto a new one:
+# both generations then compile side by side for no fix and no feature. A
+# library that moved ahead of its consumers would impose exactly that cost on
+# them, from a schedule nobody chose. Lift it when `eframe` moves to the 0.100
+# line, which is the same condition `slipcase-desktop` records against its own.
 windows-registry = "0.6.1"

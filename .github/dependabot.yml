@@ -1,36 +1,13 @@
-# Dependabot keeps the two platform dependencies and the actions CI runs
-# current, so a security fix arrives as a PR rather than slipping past.
+# Dependabot keeps this repository's GitHub Actions current, so a security fix
+# arrives as a pull request rather than slipping past. The bumps are grouped
+# into one pull request so they land together.
 #
-# A `cargo` block, unlike encsniff's, because this crate does have
-# dependencies: `objc2-foundation` on macOS and `windows-registry` on Windows.
-# Neither is built on Linux, and Dependabot resolves the manifest rather than a
-# target, so both are still watched from here.
+# Package versions are not Dependabot's work here. `ship` runs the language's
+# own update as a release step, which puts the decision at the moment the tree
+# is being looked at anyway, and keeps what a release ships current as of that
+# release. Security alerts are a separate switch and stay on.
 version: 2
 updates:
-  - package-ecosystem: cargo
-    directory: "/"
-    schedule:
-      interval: monthly
-    open-pull-requests-limit: 5
-    commit-message:
-      prefix: "deps"
-    groups:
-      cargo:
-        patterns:
-          - "*"
-    ignore:
-      # Held at the 0.6 line, and the reason is a consumer's tree rather than
-      # this crate's. `slipcase-desktop` holds it there because the windows-rs
-      # support crates `eframe` pulls — `windows-link`, `windows-result`,
-      # `windows-strings` — are of that generation, and 0.100.0 is windows-rs
-      # re-basing onto a new one: both generations then compile side by side for
-      # no fix and no feature. A library that moved ahead of its consumers would
-      # impose exactly that cost on them, from a schedule nobody chose.
-      #
-      # Lift it when `eframe` moves to the 0.100 line, which is the same
-      # condition `slipcase-desktop` records against its own hold.
-      - dependency-name: windows-registry
-        versions: [">= 0.7"]
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
