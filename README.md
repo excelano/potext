@@ -83,4 +83,4 @@ could not make.
 
 ## Licence
 
-MIT. Author: David M. Anderson. Built with AI assistance (Claude, Anthropic).
+MIT. Author: David M. Anderson.
